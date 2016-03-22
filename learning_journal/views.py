@@ -4,12 +4,26 @@ from pyramid.httpexceptions import HTTPFound
 from .form import JournalForm
 from sqlalchemy.exc import DBAPIError
 import transaction
+from pyramid.security import remember, forget
 
 from .models import (
     DBSession,
     Entry,
     )
 
+
+
+@view_config(route_name='login', renderer='string')
+def login_view(request):
+    headers = remember(request, userid='daniel')
+    return HTTPFound(location='/', headers=headers)
+    #Will add CSRF stuff later
+
+
+@view_config(route_name='logout', renderer='string')
+def logout_view(request):
+    headers = forget(request)
+    return HTTPFound(location='/', headers=headers)
 
 
 
