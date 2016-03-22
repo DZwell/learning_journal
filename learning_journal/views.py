@@ -13,13 +13,13 @@ from .models import (
 
 
 
-@view_config(route_name='home', renderer='templates/list_view.jinja2')
+@view_config(route_name='home', renderer='templates/list_view.jinja2', permission='view')
 def list_view(request):
     """Handle the view of our home page."""
     return {'entries': DBSession.query(Entry).all()}
 
 
-@view_config(route_name='detail_view', renderer='templates/detail_view.jinja2')
+@view_config(route_name='detail_view', renderer='templates/detail_view.jinja2', permission='view')
 def detail_view(request):
     """Handle the view of a single journaly entry."""
     this_id = request.matchdict['this_id']
