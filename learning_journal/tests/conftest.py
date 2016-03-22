@@ -3,9 +3,11 @@ import os
 import pytest
 from sqlalchemy import create_engine
 from learning_journal.models import DBSession, Base
+
 from pyramid.paster import get_appsettings
 from webtest import TestApp
 from learning_journal import main
+
 
 
 TEST_DATABASE_URL = os.environ.get('TESTDB_URL')

@@ -6,6 +6,8 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy import desc
 import transaction
 import markdown
+from pyramid.security import remember, forget
+
 
 from .models import (
     DBSession,
@@ -13,13 +15,29 @@ from .models import (
     )
 
 
-@view_config(route_name='home', renderer='templates/list_view.jinja2')
+
+
+@view_config(route_name='login', renderer='string')
+def login_view(request):
+    headers = remember(request, userid='daniel')
+    return HTTPFound(location='/', headers=headers)
+    #Will add CSRF stuff later
+
+
+@view_config(route_name='logout', renderer='string')
+def logout_view(request):
+    headers = forget(request)
+    return HTTPFound(location='/', headers=headers)
+
+
+
+@view_config(route_name='home', renderer='templates/list_view.jinja2', permission='view')
 def list_view(request):
     """Handle the view of our home page."""
     return {'entries': DBSession.query(Entry).order_by(desc(Entry.created)).all()}
 
 
-@view_config(route_name='detail_view', renderer='templates/detail_view.jinja2')
+@view_config(route_name='detail_view', renderer='templates/detail_view.jinja2', permission='view')
 def detail_view(request):
     """Handle the view of a single journaly entry."""
     md = markdown.Markdown(safe_mode='replace', html_replacement_text='NO')
@@ -29,7 +47,7 @@ def detail_view(request):
     return {'entry': entry, 'text': text}
 
 
-@view_config(route_name='add_view', renderer='templates/add_view.jinja2')
+@view_config(route_name='add_view', renderer='templates/add_view.jinja2', permission='add')
 def add_view(request):
     """Handle the view of our adding new entry page."""
     form = JournalForm(request.POST)
@@ -42,7 +60,9 @@ def add_view(request):
     return {'form': form}
 
 
-@view_config(route_name='edit_view', renderer='templates/add_view.jinja2')
+
+
+@view_config(route_name='edit_view', renderer='templates/edit_view.jinja2', permission='edit')
 def edit_view(request):
     """Handle the view of our edit entry page."""
     this_id = request.matchdict['this_id']
