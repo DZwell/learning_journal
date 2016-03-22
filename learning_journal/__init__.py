@@ -24,7 +24,7 @@ def main(global_config, **settings):
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
     config.add_route('detail_view', '/detail/{this_id}')
-
+    config.add_route('login_view', '/login')
     config.add_route('add_view', '/add')
     config.add_route('edit_view', '/edit/{this_id}')
     config.scan()
