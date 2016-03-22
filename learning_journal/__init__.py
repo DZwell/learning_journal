@@ -1,5 +1,8 @@
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
+from pyramid.authorization import ACLAuthorizationPolicy
+from pyramid.authentication import AuthTktAuthenticationPolicy
+import os
 
 from .models import (
     DBSession,
@@ -19,6 +22,16 @@ def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
+
+
+    #authentication
+    dummy_auth = os.environ.get(JOURNAL_AUTH_SECRET, 'testvalue')
+    authentication_policy = AuthTktAuthenticationPolicy(
+        secret= dummy_auth,
+        hashalg='sha512',
+
+    )
+
     config = Configurator(settings=settings)
     config.include('pyramid_jinja2')
     config.add_static_view('static', 'static', cache_max_age=3600)
