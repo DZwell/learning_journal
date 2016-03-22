@@ -10,4 +10,15 @@ class DefaultRoot(object):
         (Allow, 'g:admins', ALL_PERMISSIONS)
     ]
 
+    def __init__(self, request):
+        self.request = request
+
+
+def userfinder(user, request):
+    """Return either list of users or None."""
+    users = []
+    if user.lower() in request.admins:
+        user.append('g:admins')
+    return users or None
+
 

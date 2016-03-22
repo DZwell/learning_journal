@@ -29,7 +29,7 @@ def main(global_config, **settings):
     authentication_policy = AuthTktAuthenticationPolicy(
         secret= dummy_auth,
         hashalg='sha512',
-
+        callback='userfinder',
     )
 
     config = Configurator(settings=settings)
