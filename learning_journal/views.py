@@ -27,7 +27,7 @@ def detail_view(request):
     return {'entry': entry}
 
 
-@view_config(route_name='add_view', renderer='templates/add_view.jinja2')
+@view_config(route_name='add_view', renderer='templates/add_view.jinja2', permission='add')
 def add_view(request):
     """Handle the view of our adding new entry page."""
     form = JournalForm(request.POST)
@@ -43,7 +43,7 @@ def add_view(request):
 
 
 
-@view_config(route_name='edit_view', renderer='templates/edit_view.jinja2')
+@view_config(route_name='edit_view', renderer='templates/edit_view.jinja2', permission='edit')
 def edit_view(request):
     """Handle the view of our edit entry page."""
     pass
