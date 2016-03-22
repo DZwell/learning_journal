@@ -2,9 +2,10 @@
 import pytest
 from sqlalchemy import create_engine
 from learning_journal.models import DBSession, Base
+import os
 
 
-TEST_DATABASE_URL = 'sqlite:////tmp/test_db.sqlite'
+TEST_DATABASE_URL = os.environ.get('TESTDB_URL')
 
 
 @pytest.fixture(scope='session')
