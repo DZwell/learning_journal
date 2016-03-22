@@ -1,3 +1,5 @@
+import datetime
+import psycopg2
 from sqlalchemy import (
     Column,
     DateTime,
@@ -5,16 +7,12 @@ from sqlalchemy import (
     Unicode,
     UnicodeText,
     )
-
+from pyramid.security import Allow, Everyone
 from sqlalchemy.ext.declarative import declarative_base
-import datetime
-import psycopg2
-
 from sqlalchemy.orm import (
     scoped_session,
     sessionmaker,
     )
-
 from zope.sqlalchemy import ZopeTransactionExtension
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
@@ -29,3 +27,13 @@ class Entry(Base):
     title = Column(Unicode(128), unique=True)
     text = Column(UnicodeText)
     created = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+    @property
+    def __acl__(self):
+        """Add permissions for specific instance of Entry object.
+        self.author.username is the user who created this Entry instance."""
+        return [
+            (Allow, Everyone, 'view'),
+            (Allow, self.author.username, 'edit')
+        ]
