@@ -13,6 +13,11 @@ from .models import (
     )
 
 
+@view_config(route_name='login_view', renderer='string')
+def login_view(request):
+    return 'We made it'
+
+
 @view_config(route_name='home', renderer='templates/list_view.jinja2')
 def list_view(request):
     """Handle the view of our home page."""
