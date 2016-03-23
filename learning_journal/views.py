@@ -1,5 +1,6 @@
 from pyramid.response import Response
 from pyramid.view import view_config
+from pyramid.security import remember
 from pyramid.httpexceptions import HTTPFound
 from .form import JournalForm, LoginForm
 from sqlalchemy.exc import DBAPIError
@@ -20,6 +21,10 @@ def login_view(request):
         #'' is default val. if not username, return '' instead of throw error
         username = request.params.get('username', '')
         password = request.params.get('password', '')
+        if username == USER_NAME and password == PASSWORD:
+            #remember takes request and whatever else you want included in that request
+            headers = remember(request, username)
+            return HTTPFound(location='/', headers=headers)
     return {'form': form}
 
 
