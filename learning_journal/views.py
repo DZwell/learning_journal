@@ -1,7 +1,7 @@
 from pyramid.response import Response
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
-from .form import JournalForm
+from .form import JournalForm, LoginForm
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy import desc
 import transaction
@@ -13,12 +13,15 @@ from .models import (
     )
 
 
-@view_config(route_name='login_view', renderer='string')
-def login_view(request):
-    return 'We made it'
+# @view_config(route_name='login_view', renderer='string')
+# def login_view(request):
+#     form = LoginForm(request.POST)
+#     if request.method == 'POST':
+#         username = requ
 
 
-@view_config(route_name='home', renderer='templates/list_view.jinja2')
+
+@view_config(route_name='home', renderer='templates/list_view.jinja2', permission='user')
 def list_view(request):
     """Handle the view of our home page."""
     return {'entries': DBSession.query(Entry).order_by(desc(Entry.created)).all()}

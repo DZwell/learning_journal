@@ -9,3 +9,9 @@ class JournalForm(Form):
 
 
 form = JournalForm()
+
+
+class LoginForm(Form):
+    """Create login form."""
+    username = StringField('username')
+    password = StringField('password')
