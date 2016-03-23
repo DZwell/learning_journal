@@ -13,11 +13,14 @@ from .models import (
     )
 
 
-# @view_config(route_name='login_view', renderer='string')
-# def login_view(request):
-#     form = LoginForm(request.POST)
-#     if request.method == 'POST':
-#         username = requ
+@view_config(route_name='login_view', renderer='templates/login.jinja2')
+def login_view(request):
+    form = LoginForm(request.POST)
+    if request.method == 'POST' and form.validate():
+        #'' is default val. if not username, return '' instead of throw error
+        username = request.params.get('username', '')
+        password = request.params.get('password', '')
+    return {'form': form}
 
 
 

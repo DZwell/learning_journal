@@ -8,10 +8,9 @@ class JournalForm(Form):
     text = TextAreaField('text')
 
 
-form = JournalForm()
 
 
 class LoginForm(Form):
     """Create login form."""
-    username = StringField('username')
-    password = StringField('password')
+    username = StringField('username', [validators.length(min=1)])
+    password = StringField('password', [validators.length(min=5)])

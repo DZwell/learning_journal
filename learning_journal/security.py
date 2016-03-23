@@ -9,4 +9,4 @@ class DefaultRoot(object):
 
     def __init__(self, request):
         """Take request from view, pass it to Default root to check permissions."""
-         self.request = request
+        self.request = request
