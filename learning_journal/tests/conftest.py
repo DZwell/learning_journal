@@ -28,16 +28,11 @@ def sqlengine(request):
 @pytest.fixture()
 def DB_connection_for_tests(request, sqlengine):
     """Undoes stuff in DB from other DB tests."""
+    from transaction import abort
     connection = sqlengine
     transaction = connection.begin()
-    def teardown():
-        transaction.rollback()
-        connection.close()
-        DBSession.remove()
-
-    request.addfinalizer(teardown)
-
-
+    request.addfinalizer(transaction.rollback)
+    request.addfinalizer(abort)
 
 
 @pytest.fixture()
