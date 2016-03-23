@@ -23,3 +23,8 @@ def app():
 def test_access_to_view(app):
     response = app.get('/login')
     assert response.status_code == 200
+
+
+def test_no_access_to_view(app):
+    response = app.get('/login')
+    assert response.status_code == 403
