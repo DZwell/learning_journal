@@ -7,16 +7,29 @@ from learning_journal import main
 import webtest
 
 
-TEST_URL = os.environ.get('TEST_URL')
+TESTDB_URL = os.environ.get('TESTDB_URL')
 
+
+@pytest.fixture(scope='session')
+def sqlengine(request):
+    """Takes care of connection to DB."""
+    engine = create_engine(TESTDB_URL)
+    Base.metadata.create_all(engine)
+    connection = engine.connect()
+    DBSession.configure(bind=connection)
+
+    def teardown():
+        Base.metadata.drop_all(engine)
+
+    request.addfinalizer(teardown)
+    return connection
 
 
 @pytest.fixture()
-def dbtransaction(request, sqlengine):
-    connection = sqlengine.connect()
+def DB_connection_for_tests(request, sqlengine):
+    """Undoes stuff in DB from other DB tests."""
+    connection = sqlengine
     transaction = connection.begin()
-    DBSession.configure(bind=connection)
-
     def teardown():
         transaction.rollback()
         connection.close()
@@ -24,23 +37,13 @@ def dbtransaction(request, sqlengine):
 
     request.addfinalizer(teardown)
 
-    return connection
 
-@pytest.fixture(scope='session')
-def sqlengine(request):
-    engine = create_engine(TEST_DATABASE_URL)
-    DBSession.configure(bind=engine)
-    Base.metadata.create_all(engine)
-
-    def teardown():
-        Base.metadata.drop_all(engine)
-
-    request.addfinalizer(teardown)
-    return engine
 
 
 @pytest.fixture()
-def app():
-    settings = {'sqlalchemy.url': TEST_URL}
+def app(DB_connection_for_tests):
+    from pyramid.paster import get_appsettings
+    settings = get_appsettings('daniel_development.ini')
+    settings = {'sqlalchemy.url': TESTDB_URL}
     app = main({}, **settings)
     return webtest.TestApp(app)
