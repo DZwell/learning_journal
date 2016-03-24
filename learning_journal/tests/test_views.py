@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+from passlib.apps import custom_app_context as pwd_context
 from pyramid.testing import DummyRequest
 from learning_journal.models import Entry, DBSession
 from webtest.app import AppError
@@ -23,4 +24,7 @@ def test_access_to_view(authenticated_app):
     assert response.status_code == 200
 
 
-
+def test_stored_password_is_encrypted(auth_env):
+    from learning_journal.security import check_password
+    password = '12345'
+    assert check_password(password)

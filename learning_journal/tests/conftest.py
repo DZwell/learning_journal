@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
 import pytest
-from sqlalchemy import create_engine
-from learning_journal.models import DBSession, Base
-from learning_journal import main
 import webtest
+from learning_journal import main
+from learning_journal.models import DBSession, Base
+from passlib.apps import custom_app_context as pwd_context
+from sqlalchemy import create_engine
 
 
 TESTDB_URL = os.environ.get('TESTDB_URL')

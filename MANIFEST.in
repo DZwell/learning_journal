@@ -1,2 +1,3 @@
-include *.txt *.ini *.cfg *.rst
+include *.txt *.ini *.cfg *.rst *.md
 recursive-include learning_journal *.ico *.png *.css *.gif *.jpg *.pt *.txt *.mak *.mako *.js *.html *.xml
+*jinja2
