@@ -4,7 +4,7 @@ from pyramid.security import Allow, Everyone, Authenticated, ALL_PERMISSIONS
 
 class DefaultRoot(object):
     __acl__ = [
-        (Allow, Authenticated, ALL_PERMISSIONS)
+        (Allow, Authenticated, 'view')
     ]
 
     def __init__(self, request):

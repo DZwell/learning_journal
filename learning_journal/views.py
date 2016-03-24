@@ -1,17 +1,23 @@
 from pyramid.response import Response
 from pyramid.view import view_config
-from pyramid.security import remember
+from pyramid.security import remember, ALL_PERMISSIONS
 from pyramid.httpexceptions import HTTPFound
+from .security import DefaultRoot
 from .form import JournalForm, LoginForm
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy import desc
 import transaction
 import markdown
+import os
 
 from .models import (
     DBSession,
     Entry,
     )
+
+#Must source bash_profile in terminal tab where server is run
+USER_NAME = os.environ.get('USER_NAME')
+PASSWORD = os.environ.get('PASSWORD')
 
 
 @view_config(route_name='login_view', renderer='templates/login.jinja2')
@@ -29,7 +35,7 @@ def login_view(request):
 
 
 
-@view_config(route_name='home', renderer='templates/list_view.jinja2', permission='user')
+@view_config(route_name='home', renderer='templates/list_view.jinja2', permission='view')
 def list_view(request):
     """Handle the view of our home page."""
     return {'entries': DBSession.query(Entry).order_by(desc(Entry.created)).all()}
