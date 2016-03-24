@@ -9,7 +9,6 @@ import webtest
 
 TESTDB_URL = os.environ.get('TESTDB_URL')
 
-
 @pytest.fixture(scope='session')
 def sqlengine(request):
     """Takes care of connection to DB."""
@@ -42,3 +41,16 @@ def app(DB_connection_for_tests):
     settings = {'sqlalchemy.url': TESTDB_URL}
     app = main({}, **settings)
     return webtest.TestApp(app)
+
+
+@pytest.fixture()
+def authenticated_app(app, auth_env):
+    app.post('/login', auth_env)
+    return app
+
+
+@pytest.fixture()
+def auth_env():
+    username = 'dz'
+    password = '12345'
+    return {'username':username, 'password': password}
