@@ -3,61 +3,57 @@ import os
 import pytest
 from sqlalchemy import create_engine
 from learning_journal.models import DBSession, Base
+from learning_journal import main
+import webtest
 
 from pyramid.paster import get_appsettings
 from webtest import TestApp
 from learning_journal import main
 
-
-
-TEST_DATABASE_URL = os.environ.get('TESTDB_URL')
-
+TESTDB_URL = os.environ.get('TESTDB_URL')
 
 @pytest.fixture(scope='session')
 def sqlengine(request):
-    engine = create_engine(TEST_DATABASE_URL)
-    DBSession.configure(bind=engine)
+    """Takes care of connection to DB."""
+    engine = create_engine(TESTDB_URL)
     Base.metadata.create_all(engine)
+    connection = engine.connect()
+    DBSession.configure(bind=connection)
 
     def teardown():
         Base.metadata.drop_all(engine)
 
     request.addfinalizer(teardown)
-    return engine
-
-@pytest.fixture()
-def dbtransaction(request, sqlengine):
-    connection = sqlengine.connect()
-    transaction = connection.begin()
-    DBSession.configure(bind=connection)
-
-    def teardown():
-        transaction.rollback()
-        connection.close()
-        DBSession.remove()
-
-    request.addfinalizer(teardown)
-
     return connection
 
 
 @pytest.fixture()
-def dummy_post(dbtransaction):
-    from pyramid.testing import DummyRequest
-    from webob.multidict import MultiDict
-    req = DummyRequest()
-    req.method = 'POST'
-    md = MultiDict()
-    md.add('title', 'dummy title')
-    md.add('text', 'dummy text')
-    req.POST = md
-    return req
+def DB_connection_for_tests(request, sqlengine):
+    """Undoes stuff in DB from other DB tests."""
+    from transaction import abort
+    connection = sqlengine
+    transaction = connection.begin()
+    request.addfinalizer(transaction.rollback)
+    request.addfinalizer(abort)
 
 
 @pytest.fixture()
-def app(config_path, dbtransaction, test_url):
-    """Create pretend app fixture of main app to test routing."""
-    settings = get_appsettings(config_path)
-    settings['sqlalchemy.url'] = test_url
+def app(DB_connection_for_tests):
+    from pyramid.paster import get_appsettings
+    settings = get_appsettings('daniel_development.ini')
+    settings = {'sqlalchemy.url': TESTDB_URL}
     app = main({}, **settings)
-    return TestApp(app)
+    return webtest.TestApp(app)
+
+
+@pytest.fixture()
+def authenticated_app(app, auth_env):
+    app.post('/login', auth_env)
+    return app
+
+
+@pytest.fixture()
+def auth_env():
+    username = 'dz'
+    password = '12345'
+    return {'username':username, 'password': password}

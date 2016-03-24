@@ -1,24 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from pyramid.security import Allow, Everyone
-from pyramid.security import ALL_PERMISSIONS
+from pyramid.security import Allow, Everyone, Authenticated, ALL_PERMISSIONS
 
 
 class DefaultRoot(object):
     __acl__ = [
-        (Allow, Everyone, 'view'),
-        (Allow, 'g:admins', ALL_PERMISSIONS)
+        (Allow, Authenticated, 'view')
     ]
 
     def __init__(self, request):
+        """Take request from view, pass it to Default root to check permissions."""
         self.request = request
-
-
-def userfinder(user, request):
-    """Return either list of users or None."""
-    users = []
-    if user.lower() in request.admins:
-        user.append('g:admins')
-    return users or None
-
-

@@ -1,33 +1,38 @@
 from pyramid.response import Response
 from pyramid.view import view_config
+from pyramid.security import remember, ALL_PERMISSIONS
 from pyramid.httpexceptions import HTTPFound
-from .form import JournalForm
+from .security import DefaultRoot
+from .form import JournalForm, LoginForm
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy import desc
 import transaction
 import markdown
-from pyramid.security import remember, forget
-
+import os
 
 from .models import (
     DBSession,
     Entry,
     )
 
+#Must source bash_profile in terminal tab where server is run
+USER_NAME = os.environ.get('USER_NAME')
+PASSWORD = os.environ.get('PASSWORD')
 
 
 
-@view_config(route_name='login', renderer='string')
+@view_config(route_name='login_view', renderer='templates/login.jinja2')
 def login_view(request):
-    headers = remember(request, userid='daniel')
-    return HTTPFound(location='/', headers=headers)
-    #Will add CSRF stuff later
-
-
-@view_config(route_name='logout', renderer='string')
-def logout_view(request):
-    headers = forget(request)
-    return HTTPFound(location='/', headers=headers)
+    form = LoginForm(request.POST)
+    if request.method == 'POST' and form.validate():
+        #'' is default val. if not username, return '' instead of throw error
+        username = request.params.get('username', '')
+        password = request.params.get('password', '')
+        if username == USER_NAME and password == PASSWORD:
+            #remember takes request and whatever else you want included in that request
+            headers = remember(request, username)
+            return HTTPFound(location='/', headers=headers)
+    return {'form': form}
 
 
 
