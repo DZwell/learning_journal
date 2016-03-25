@@ -1,8 +1,10 @@
 from pyramid.config import Configurator
+from pyramid.session import SignedCookieSessionFactory
 from sqlalchemy import engine_from_config
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from .security import DefaultRoot
+import os
 
 from .models import (
     DBSession,
@@ -19,14 +21,19 @@ def make_session(settings):
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
+    if 'DATABASE_URL' in os.environ:
+        settings['sqlalchemy.url'] = os.environ['DATABASE_URL']
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
-    config = Configurator(settings=settings, root_factory=DefaultRoot)
-    authN = AuthTktAuthenticationPolicy('shhh', hashalg='sha512')
+    config = Configurator(settings=settings, DefaultRoot)
+    secret = os.environ.get('AUTH_SECRET', 'somesecret')
+    authN = AuthTktAuthenticationPolicy(secret, hashalg='sha512')
     authZ = ACLAuthorizationPolicy()
     config.set_authentication_policy(authN)
     config.set_authorization_policy(authZ)
+    session_factory = SignedCookieSessionFactory('itsaseekrit')
+    config.set_session_factory(session_factory)
     config.include('pyramid_jinja2')
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
