@@ -1,4 +1,5 @@
 from pyramid.response import Response
+from pyramid.session import check_csrf_token
 from pyramid.view import view_config
 from pyramid.security import remember, forget, ALL_PERMISSIONS
 from pyramid.httpexceptions import HTTPFound
@@ -23,10 +24,11 @@ PASSWORD = os.environ.get('PASSWORD')
 
 
 @view_config(route_name='login_view', renderer='templates/login.jinja2')
+@view_config(route_name='login_view', renderer='templates/login.jinja2', request_method='POST', check_csrf=True)
 def login_view(request):
     # import pdb; pdb.set_trace()
-    context = get_auth_tkt_from_request(request)
-    form = LoginForm(request.POST, csrf_context=context)
+    # context = get_auth_tkt_from_request(request)
+    form = LoginForm(request.POST)
     if request.method == 'POST' and form.validate():
         #'' is default val. if not username, return '' instead of throw error
         username = request.params.get('username', '')
@@ -62,7 +64,8 @@ def detail_view(request):
     return {'entry': entry, 'text': text}
 
 
-@view_config(route_name='add_view', renderer='templates/add_view.jinja2', permission='add')
+@view_config(route_name='add_view', renderer='templates/add_view.jinja2')
+@view_config(route_name='add_view', renderer='templates/add_view.jinja2', request_method='POST', check_csrf=True)
 def add_view(request):
     """Handle the view of our adding new entry page."""
     form = JournalForm(request.POST)
@@ -75,9 +78,8 @@ def add_view(request):
     return {'form': form}
 
 
-
-
-@view_config(route_name='edit_view', renderer='templates/edit_view.jinja2', permission='edit')
+@view_config(route_name='edit_view', renderer='templates/add_view.jinja2')
+@view_config(route_name='edit_view', renderer='templates/add_view.jinja2', request_method='POST', check_csrf=True)
 def edit_view(request):
     """Handle the view of our edit entry page."""
     this_id = request.matchdict['this_id']
@@ -91,14 +93,14 @@ def edit_view(request):
 
 
 
-def get_auth_tkt_from_request(request):
-    """Get an auth_tkt from a request."""
-    request_cookies = request.headers.items()
-    auth_tkts = [value for cookie, value in request_cookies
-                 if cookie == 'Cookie' and value.startswith('auth_tkt')]
-    if not auth_tkts:
-        return ''
-    return auth_tkts[0]
+# def get_auth_tkt_from_request(request):
+#     """Get an auth_tkt from a request."""
+#     request_cookies = request.headers.items()
+#     auth_tkts = [value for cookie, value in request_cookies
+#                  if cookie == 'Cookie' and value.startswith('auth_tkt')]
+#     if not auth_tkts:
+#         return ''
+#     return auth_tkts[0]
 
 
 conn_err_msg = """
