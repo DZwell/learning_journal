@@ -26,7 +26,7 @@ def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
     DBSession.configure(bind=engine)
     Base.metadata.bind = engine
-    config = Configurator(settings=settings, root_factory=DefaultRoot)
+    config = Configurator(settings=settings, DefaultRoot)
     secret = os.environ.get('AUTH_SECRET', 'somesecret')
     authN = AuthTktAuthenticationPolicy(secret, hashalg='sha512')
     authZ = ACLAuthorizationPolicy()
