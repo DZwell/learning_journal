@@ -1,6 +1,6 @@
 from pyramid.response import Response
 from pyramid.view import view_config
-from pyramid.security import remember, ALL_PERMISSIONS
+from pyramid.security import remember, forget, ALL_PERMISSIONS
 from pyramid.httpexceptions import HTTPFound
 from .security import DefaultRoot, check_password
 from passlib.apps import custom_app_context as pwd_context
@@ -33,6 +33,12 @@ def login_view(request):
             headers = remember(request, username)
             return HTTPFound(location='/', headers=headers)
     return {}
+
+
+@view_config(route_name='logout_view')
+def logout_view(request):
+    headers = forget(request)
+    return HTTPFound(location='/login', headers=headers)
 
 
 

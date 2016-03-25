@@ -32,6 +32,7 @@ def main(global_config, **settings):
     config.add_route('home', '/')
     config.add_route('detail_view', '/detail/{this_id}')
     config.add_route('login_view', '/login')
+    config.add_route('logout_view', '/logout')
     config.add_route('add_view', '/add')
     config.add_route('edit_view', '/edit/{this_id}')
     config.scan()
