@@ -1,12 +1,10 @@
 {% extends "base.jinja2" %}
 {% block content %}
-<form action={{ request.route_url('login_view')}} method='POST'>
-<div>
-    {{ form.username}}
-</div>
-<div>
-    {{ form.password }}
-</div>
-<div><input type="submit" value="submit"></div>
-</form>
+<form action="" method="POST">
+    <label for="login">Username</label>
+    <input type="text" name="username" value="">
+    <label for="password">Password</label>
+    <input type="password" name="password" value="">
+    <button type="submit" name="login" value="login">Log In</button>
+  </form>
 {% endblock %}

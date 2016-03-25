@@ -1,8 +1,9 @@
 from pyramid.response import Response
 from pyramid.view import view_config
-from pyramid.security import remember, ALL_PERMISSIONS
+from pyramid.security import remember, forget, ALL_PERMISSIONS
 from pyramid.httpexceptions import HTTPFound
-from .security import DefaultRoot
+from .security import DefaultRoot, check_password
+from passlib.apps import custom_app_context as pwd_context
 from .form import JournalForm, LoginForm
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy import desc
@@ -28,11 +29,17 @@ def login_view(request):
         #'' is default val. if not username, return '' instead of throw error
         username = request.params.get('username', '')
         password = request.params.get('password', '')
-        if username == USER_NAME and password == PASSWORD:
+        if check_password(password):
             #remember takes request and whatever else you want included in that request
             headers = remember(request, username)
             return HTTPFound(location='/', headers=headers)
-    return {'form': form}
+    return {}
+
+
+@view_config(route_name='logout_view')
+def logout_view(request):
+    headers = forget(request)
+    return HTTPFound(location='/login', headers=headers)
 
 
 
