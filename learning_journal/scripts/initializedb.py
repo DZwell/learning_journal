@@ -25,12 +25,6 @@ def usage(argv):
     sys.exit(1)
 
 
-with transaction.manager:
-    password = os.environ.get('ADMIN_PASSWORD', 'admin')
-    encrypted = password_context.encrypt(password)
-    admin = User(name=u'admin', password=encrypted)
-    DBSession.add(admin)
-
 
 def main(argv=sys.argv):
     if len(argv) < 2:
