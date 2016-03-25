@@ -1,4 +1,5 @@
 from pyramid.config import Configurator
+from pyramid.session import SignedCookieSessionFactory
 from sqlalchemy import engine_from_config
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
@@ -27,6 +28,12 @@ def main(global_config, **settings):
     authZ = ACLAuthorizationPolicy()
     config.set_authentication_policy(authN)
     config.set_authorization_policy(authZ)
+
+    session_factory = SignedCookieSessionFactory('itsaseekrit')
+    config.set_session_factory(session_factory)
+
+
+
     config.include('pyramid_jinja2')
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
