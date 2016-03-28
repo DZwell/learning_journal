@@ -29,9 +29,6 @@ class Entry(Base):
     title = Column(Unicode(128), unique=True)
     text = Column(UnicodeText)
     created = Column(DateTime, default=datetime.datetime.utcnow)
-    author_id = Column(Integer, ForeignKey('users.id'))
-    #Ties User model to Entry model
-    author = relationship('User', back_populates='entries')
 
     @property
     def __acl__(self):
