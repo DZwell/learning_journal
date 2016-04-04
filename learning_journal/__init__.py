@@ -28,7 +28,7 @@ def main(global_config, **settings):
     Base.metadata.bind = engine
     config = Configurator(settings=settings, root_factory=DefaultRoot)
     secret = os.environ.get('AUTH_SECRET', 'somesecret')
-    authN = AuthTktAuthenticationPolicy(secret, hashalg='sha512')
+    authN = AuthTktAuthenticationPolicy('afd', hashalg='sha512')
     authZ = ACLAuthorizationPolicy()
     config.set_authentication_policy(authN)
     config.set_authorization_policy(authZ)
