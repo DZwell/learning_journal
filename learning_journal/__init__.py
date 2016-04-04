@@ -18,9 +18,9 @@ def make_session(settings):
     Session = sessionmaker(bind=engine)
     return Session()
 
+
 def main(global_config, **settings):
-    """ This function returns a Pyramid WSGI application.
-    """
+    """This function returns a Pyramid WSGI application."""
     if 'DATABASE_URL' in os.environ:
         settings['sqlalchemy.url'] = os.environ['DATABASE_URL']
     engine = engine_from_config(settings, 'sqlalchemy.')
@@ -36,9 +36,9 @@ def main(global_config, **settings):
     config.set_session_factory(session_factory)
     config.include('pyramid_jinja2')
     config.add_static_view('static', 'static', cache_max_age=3600)
-    config.add_route('home', '/')
+    config.add_route('home', '/list')
     config.add_route('detail_view', '/detail/{this_id}')
-    config.add_route('login_view', '/login')
+    config.add_route('login_view', '/')
     config.add_route('logout_view', '/logout')
     config.add_route('add_view', '/add')
     config.add_route('edit_view', '/edit/{this_id}')

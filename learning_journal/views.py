@@ -26,8 +26,6 @@ PASSWORD = os.environ.get('PASSWORD')
 @view_config(route_name='login_view', renderer='templates/login.jinja2')
 @view_config(route_name='login_view', renderer='templates/login.jinja2', request_method='POST', check_csrf=True)
 def login_view(request):
-    # import pdb; pdb.set_trace()
-    # context = get_auth_tkt_from_request(request)
     form = LoginForm(request.POST)
     if request.method == 'POST' and form.validate():
         #'' is default val. if not username, return '' instead of throw error
@@ -91,16 +89,6 @@ def edit_view(request):
         return HTTPFound(location='/detail/{}'.format(this_id))
     return {'form': form}
 
-
-
-# def get_auth_tkt_from_request(request):
-#     """Get an auth_tkt from a request."""
-#     request_cookies = request.headers.items()
-#     auth_tkts = [value for cookie, value in request_cookies
-#                  if cookie == 'Cookie' and value.startswith('auth_tkt')]
-#     if not auth_tkts:
-#         return ''
-#     return auth_tkts[0]
 
 
 conn_err_msg = """
